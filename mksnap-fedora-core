@@ -1,6 +1,15 @@
 #!/bin/sh
+if [ $(id -u) != 0 ]; then
+	echo "This script has to run as root"
+	exit 1
+fi
 set -x
+
+# Yeah, we're just terrible
 rm -rf "$(pwd)/fedora-core-24"
+
+# Create a Fedora 24 chroot
+# TODO: make this smaller!
 dnf \
 	--assumeyes \
 	--releasever=24 \
@@ -8,4 +17,25 @@ dnf \
 	--installroot="$(pwd)/fedora-core-24" \
 	install \
 	passwd bash fedora-release filesystem glibc-minimal-langpack
-sudo rm -rf "$(pwd)/fedora-core-24/var/cache/dnf"
+
+# Remove dnf cache
+rm -rf "$(pwd)/fedora-core-24/var/cache/dnf"
+
+# TODO: remove other things that should not be there
+
+version="24+$(date +%Y%m%d)"
+# TODO: add support for other architectures, at least i368, armhf and aarch64
+arch="amd64"
+
+# Create the snap meta-data file
+mkdir -p fedora-core-24/meta
+cat << SNAP_YAML > fedora-core-24/meta/snap.yaml
+name: fedora-core
+version: $version
+summary: The fedora-core snap
+architectures: [amd64]
+type: os
+SNAP_YAML
+
+# Squashfs the whole thing
+( cd fedora-core-24 && mksquashfs . ../fedora-core_$version-$arch.snap -comp xz -no-xattrs ) 
