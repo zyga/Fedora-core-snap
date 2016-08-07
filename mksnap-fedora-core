@@ -1,0 +1,11 @@
+#!/bin/sh
+set -x
+rm -rf "$(pwd)/fedora-core-24"
+dnf \
+	--assumeyes \
+	--releasever=24 \
+	--setopt=install_weak_deps=False \
+	--installroot="$(pwd)/fedora-core-24" \
+	install \
+	passwd bash fedora-release filesystem glibc-minimal-langpack
+sudo rm -rf "$(pwd)/fedora-core-24/var/cache/dnf"
