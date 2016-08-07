@@ -6,7 +6,6 @@ Version:        0
 Release:        1.git%{shortcommit}%{?dist}
 Summary:        Tools for constructing the fedora-core snap
 
-Group:          Development/Tools
 License:        MIT
 URL:            https://github.com/zyga/fedora-core-snap
 Source0:        %{url}/archive/%{commit}/%{name}-%{commit}.tar.gz
